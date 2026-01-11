@@ -1405,14 +1405,12 @@ settings.addEventListener('click', () => {
     document.getElementById('popupOverlay').style.display = "flex";
 });
 
-function showContact() {
-    document.getElementById('popupTitle').textContent = "Contact Info";
+function showUpdates() {
+    document.getElementById('popupTitle').textContent = "Updates";
     const popupBody = document.getElementById('popupBody');
     popupBody.innerHTML = `
-     <a href="https://discord.gg/R2p5S9y2" target="_blank" rel="noopener noreferrer">
      <a 
-<p>https://discord.gg/R2p5S9y2</p>
-    <p>Email: harriwalk0@gmail.com</p>`;
+<p>New discord and fully source code complete i can now add any game</p>`;
     popupBody.contentEditable = false;
     document.getElementById('popupOverlay').style.display = "flex";
 }
@@ -1531,6 +1529,7 @@ HTMLCanvasElement.prototype.toDataURL = function (...args) {
     </script>
 </body>
 </html>
+
 
 
 
