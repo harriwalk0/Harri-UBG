@@ -620,11 +620,13 @@ settings.addEventListener('click', () => {
     document.getElementById('popupOverlay').style.display = "flex";
 });
 
-function showUpdates() {
-    document.getElementById('popupTitle').textContent = "Updates";
+function showAbout() {
+    document.getElementById('popupTitle').textContent = "About";
     const popupBody = document.getElementById('popupBody');
     popupBody.innerHTML = `
-     <p>New discord and full source code complete i can now add any game</p>`;
+     <p>Fully coded and designed by Harri</p>
+     <p>Spent hours publishing and designing</p>
+     <p>Source code for sell dm me on discord @harri0828.28 or email me at harriwalk0@gmail.com</p>`;
     popupBody.contentEditable = false;
     document.getElementById('popupOverlay').style.display = "flex";
 }
@@ -733,3 +735,4 @@ HTMLCanvasElement.prototype.toDataURL = function (...args) {
     return "";
 
 };
+
