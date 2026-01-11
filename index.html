@@ -814,7 +814,7 @@ async function listZones() {
       let shajson;
       let sha;
         try {
-          sharesponse = await fetch("https://github.com/harriwalk0/assets/blob/main/zones.json"+Date.now());
+          sharesponse = await fetch("https://raw.githubusercontent.com/harriwalk0/assets/refs/heads/main/zones.json"+Date.now());
         } catch (error) {}
         if (sharesponse && sharesponse.status === 200) {
           try {
@@ -1529,12 +1529,3 @@ HTMLCanvasElement.prototype.toDataURL = function (...args) {
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
