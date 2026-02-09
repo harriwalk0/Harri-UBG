@@ -40,7 +40,6 @@
     <meta name="twitter:title" content="Harri UBG">
     <meta name="twitter:description" content="Play unbl*cked games like Crazy Cattle 3D and DriveMad on Harri UBG. Fast, free, no downloads—perfect for school or home.">
     <style>
-        /* KEY SYSTEM STYLES */
         #login-overlay {
             position: fixed; inset: 0;
             background: linear-gradient(-45deg, #0000ff, #fc2651, #0000ff, #ff4d75);
@@ -73,13 +72,13 @@
         }
         .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(252, 38, 81, 0.4); filter: brightness(1.1); }
 
-        .test-btn {
+        .iverted-btn {
             width: 100%; padding: 14px; margin-top: 20px; border-radius: 12px; border: none; 
             background: linear-gradient(135deg, #ff4d75 0%, #0000ff 100%);
             color: white; font-weight: bold; cursor: pointer; transition: 0.3s; 
             font-size: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .test-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(252, 38, 81, 0.4); filter: brightness(1.1); }
+        .inverted-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(252, 38, 81, 0.4); filter: brightness(1.1); }
         
         
         .last-pass-btn { 
@@ -754,8 +753,8 @@ footer {
             <p style="color: #94a3b8; margin-top: 8px; font-weight: 500;">Access Key Required</p>
            <input type="password" id="pass-field" class="login-input" placeholder="Enter Access Key">
            <button onclick="unlock()" class="login-btn">Unlock</button>
-           <button onclick="checkExpiry()" class="test-btn" style="margin-top: 10px;">Check Expiry</button>
-           <button onclick="manualLock()" class="test-btn">Lock Key to HWID</button>
+           <button onclick="checkExpiry()" class="last-pass-btn" style="margin-top: 10px;">Check Expiry</button>
+           <button onclick="manualLock()" class="last-pass-btn">Lock Key to HWID</button>
 <p id="err-text" style="color: #ff4d75; font-size: 13px; margin-top: 15px; display: none; font-weight: bold;">Invalid Access Key</p>
            <p id="expiry-display" style="color: #94a3b8; font-size: 13px; margin-top: 10px; font-weight: 500;"></p>
             <p id="expiry-info" style="color: #94a3b8; font-size: 13px; margin-top: 5px; font-weight: 500;"></p>
@@ -865,7 +864,6 @@ const SUPABASE_KEY = "sb_publishable_-FKpDsbTCou01YerdG78wA_fP1_rlS_";
 
 function getDeviceID() {
     try {
-        // 1. Canvas Fingerprint (Checks how the GPU renders graphics)
         var canvas = document.createElement('canvas');
         var ctx = canvas.getContext('2d');
         var txt = 'HarriUBG_Key_System_v1';
@@ -882,33 +880,27 @@ function getDeviceID() {
         
         var canvasData = canvas.toDataURL();
 
-        // 2. Gather other browser internals (Screen + Hardware Specs)
-        // We add navigator.hardwareConcurrency (CPU cores) and deviceMemory (RAM) if available
         var extraInfo = (navigator.userAgent || "") + 
                         (screen.width + "x" + screen.height) + 
                         (screen.colorDepth || "") + 
                         (navigator.hardwareConcurrency || "") + 
                         (navigator.deviceMemory || "");
 
-        // 3. Combine them into one giant string
         var fullString = canvasData + extraInfo;
 
-        // 4. Hash the string into a short ID
         var hash = 0;
         for (var i = 0; i < fullString.length; i++) {
             var char = fullString.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
-            hash = hash & hash; // Convert to 32bit integer
+            hash = hash & hash;
         }
 
         return "HWID-" + Math.abs(hash);
 
     } catch (e) {
-        // Fallback if something is blocked
         return "HWID-FALLBACK-" + (screen.width + "x" + screen.height);
     }
 }
-// --- PASTE THESE AT THE VERY BOTTOM OF YOUR SCRIPT ---
 
 function getCanvasFingerprint() {
     try {
@@ -962,7 +954,6 @@ function getAudioFingerprint() {
     });
 }
 
-// Manual Lock Function
 async function manualLock() {
     const enteredPass = document.getElementById('pass-field').value.trim();
     const errText = document.getElementById('err-text');
@@ -994,21 +985,18 @@ async function manualLock() {
 
             const keyData = data[0];
 
-            // 1. CHECK IF ALREADY LOCKED TO *YOU*
             if (keyData.hwid === currentDeviceID) {
-                errText.style.color = "#10b981"; // Success Green
+                errText.style.color = "#10b981";
                 errText.innerText = "You have already locked this key to your device!";
                 return; 
             }
 
-            // 2. CHECK IF LOCKED TO *SOMEONE ELSE*
             if (keyData.hwid && keyData.hwid !== "") {
                 errText.style.color = "#ff4d75";
                 errText.innerText = "This key is already locked to another device.";
                 return;
             }
 
-            // 3. PROCEED WITH INITIAL LOCK
             const updateUrl = `${SUPABASE_URL}/rest/v1/math?id=eq.${keyData.id}`;
             const patchRes = await fetch(updateUrl, {
                 method: "PATCH",
@@ -1050,12 +1038,9 @@ async function unlock() {
 
     setTimeout(async () => {
         try {
-            // 1. GENERATE ID (Moved inside try block so we can catch errors)
-            // We use 'await' because the audio check takes a split second
             const currentDeviceID = await getDeviceID();
-            console.log("Debug HWID:", currentDeviceID); // Check console (F12) to see if this prints
+            console.log("Debug HWID:", currentDeviceID);
 
-            // 2. CHECK DATABASE
             const url = `${SUPABASE_URL}/rest/v1/math?key_name=eq.${enteredPass}&select=*`;
             const response = await fetch(url, {
                 headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
@@ -1070,29 +1055,24 @@ async function unlock() {
 
             const keyData = data[0];
 
-            // 3. CHECK EXPIRY
             if (keyData.expires && new Date(keyData.expires) < now) {
                 errText.style.color = "#ff4d75";
                 errText.innerText = "This key has expired.";
                 return;
             }
 
-            // 4. CHECK LOCK STATUS
-            // If key is NOT locked, force them to lock it first
             if (!keyData.hwid || keyData.hwid === "") {
                 errText.style.color = "#ff4d75";
                 errText.innerText = "Key not locked. Click 'Lock Key to HWID' first.";
                 return; 
             }
 
-            // If key IS locked, check if it matches
             if (keyData.hwid !== currentDeviceID) {
                 errText.style.color = "#ff4d75";
                 errText.innerText = "This key is locked to a different device.";
                 return;
             }
 
-            // 5. SUCCESS
             errText.style.color = "#10b981";
             errText.innerText = "Access Granted!";
 
@@ -1103,9 +1083,8 @@ async function unlock() {
             }, 300);
 
         } catch (error) {
-            console.error("Full Error Details:", error); // LOOK IN CONSOLE FOR THIS
+            console.error("Full Error Details:", error);
             errText.style.color = "#ff4d75";
-            // This will now print the REAL error on screen instead of just "Connection Error"
             errText.innerText = "Error: " + error.message; 
         }
     }, 700); 
@@ -1146,31 +1125,26 @@ async function checkExpiry() {
             errText.style.color = "#ff4d75";
             errText.innerText = "Connection error.";
         }
-    }, 700); // <--- 3 second duration
+    }, 700); 
 }
 
 document.getElementById('pass-field').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlock(); });
-/* --- END SUPABASE SYSTEM --- */
+
 
 function logout() {
-    // 1. Clear session data
     localStorage.removeItem('harri_key');
     
-    // 2. Hide the main content and show the login overlay
     document.getElementById('login-overlay').style.display = 'flex';
     
-    // 3. Clear the password field
     const passField = document.getElementById('pass-field');
     if (passField) passField.value = '';
 
-    // 4. Reset error text
     const errText = document.getElementById('err-text');
     if (errText) {
         errText.style.display = 'none';
         errText.innerText = '';
     }
 
-    // 5. Close the settings popup so it's not open when they log back in
     closePopup();
     
     console.log("Logged out successfully without white screen.");
@@ -1203,7 +1177,6 @@ function toTitleCase(str) {
   );
 }
 async function listZones() {
-    // ADDED: Prevent loading if overlay is present
     if (document.getElementById('login-overlay').style.display !== 'none') return;
 
     try {
@@ -1235,7 +1208,7 @@ async function listZones() {
         const response = await fetch(zonesURL+"?t="+Date.now());
         const json = await response.json();
         zones = json;
-        zones[0].featured = true; // always gonna be the discord
+        zones[0].featured = true;
         await fetchPopularity();
         sortZones();
         const search = new URLSearchParams(window.location.search);
@@ -1721,7 +1694,7 @@ async function saveData() {
           if (data.caches) {
             for (const cacheName in data.caches) {
               const cache = await caches.open(cacheName);
-              await cache.math().then(math => Promise.all(math.map(k => cache.delete(k)))); // clear existing
+              await cache.math().then(math => Promise.all(math.map(k => cache.delete(k))));
         
               for (const entry of data.caches[cacheName]) {
                 let responseBody;
@@ -1909,7 +1882,6 @@ XMLHttpRequest.prototype.open = function (method, url) {
         console.warn(`lam`);
         return;
     }
-    // ... other code ...
     return originalOpen.apply(this, arguments);
 };
 
