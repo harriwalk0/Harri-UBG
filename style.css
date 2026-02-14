@@ -314,7 +314,7 @@ main {
 .zone-header {
     background: var(--gradient-primary);
     color: white;
-    padding: 1rem 1.5rem;
+    padding: 0.3rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -640,4 +640,34 @@ footer {
 .settings-button:active {
     transform: translateY(0);
     box-shadow: var(--shadow-sm);
+}
+
+.info-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: background-color 0.2s, transform 0.2s;
+    color: inherit;
+    vertical-align: middle;
+}
+
+.info-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.info-button:active {
+    transform: scale(0.95);
+}
+
+.info-button svg {
+    display: block;
 }
